@@ -63,7 +63,6 @@ describe("TESTING /api/user", () => {
     const server = new Server();
     let adminUserToken = null;
     let normalUserToken = null;
-    let createdUser = null;
 
     before((done) => {
         server
@@ -128,7 +127,7 @@ describe("TESTING /api/user", () => {
                     expect(body.data.createUser).to.contain.property("avatar");
                     expect(body.data.createUser).to.contain.property("role");
 
-                    createdUser = body.data.createUser;
+                    const createdUser = body.data.createUser;
 
                     request(server.app.app)
                         .post("/graphql")
@@ -177,7 +176,7 @@ describe("TESTING /api/user", () => {
                     expect(body.data.createUser).to.contain.property("avatar");
                     expect(body.data.createUser).to.contain.property("role");
 
-                    createdUser = body.data.createUser;
+                    const createdUser = body.data.createUser;
 
                     request(server.app.app)
                         .post("/graphql")
@@ -220,6 +219,9 @@ describe("TESTING /api/user", () => {
                                     expect(body.data.user).to.contain.property("fullname");
                                     expect(body.data.user).to.contain.property("avatar");
                                     expect(body.data.user).to.contain.property("role");
+                                    expect(body.data.user.role).to.be.an("object");
+                                    expect(body.data.user.role).to.contain.property("_id");
+                                    expect(body.data.user.role._id).to.equal(mockData.roles[1]._id.toString());
 
                                     done();
                                 });
@@ -248,7 +250,7 @@ describe("TESTING /api/user", () => {
                     expect(body.data.createUser).to.contain.property("avatar");
                     expect(body.data.createUser).to.contain.property("role");
 
-                    createdUser = body.data.createUser;
+                    const createdUser = body.data.createUser;
 
                     request(server.app.app)
                         .post("/graphql")
