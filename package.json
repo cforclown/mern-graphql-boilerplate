@@ -1,0 +1,57 @@
+{
+    "name": "server",
+    "version": "1.0.0",
+    "description": "Basic Templat NodeJS Express MongoDB",
+    "main": "index.js",
+    "author": "Hafis Alrizal",
+    "license": "MIT",
+    "scripts": {
+        "migrate-dev": "set NODE_ENV=development&& node src/migration/index.js",
+        "migrate-prod": "set NODE_ENV=production&& node src/migration/index.js",
+        "test": "mocha test/*.js --recursive --colors --exit --timeout 120000",
+        "test-routers": "mocha test/*.router.js --recursive --colors --timeout 120000 -w",
+        "test-services": "mocha test/*.service.js --recursive --colors --timeout 120000 -w",
+        "test-coverage": "nyc npm test",
+        "watch-dev": "set NODE_ENV=development&& nodemon src/index.js",
+        "dev": "set NODE_ENV=development&& node src/index.js",
+        "prod": "set NODE_ENV=production&& node src/index.js"
+    },
+    "dependencies": {
+        "body-parser": "^1.19.0",
+        "cookie-parser": "^1.4.5",
+        "cors": "^2.8.5",
+        "crypto-js": "^4.0.0",
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "express-flash": "0.0.2",
+        "express-graphql": "^0.12.0",
+        "express-jwt": "^6.0.0",
+        "express-session": "^1.17.1",
+        "graphql": "^15.5.1",
+        "joi": "^17.4.0",
+        "jsonwebtoken": "^8.5.1",
+        "mockgoose": "^8.0.4",
+        "moment": "^2.29.0",
+        "mongoose": "^5.10.7",
+        "morgan": "^1.10.0",
+        "passport": "^0.4.1",
+        "passport-local": "^1.0.0",
+        "swagger-jsdoc": "^4.2.0",
+        "swagger-ui-express": "^4.1.4"
+    },
+    "devDependencies": {
+        "chai": "^4.3.0",
+        "eslint": "^7.27.0",
+        "eslint-config-airbnb-base": "^14.2.1",
+        "eslint-plugin-import": "^2.23.4",
+        "mocha": "^8.3.0",
+        "nodemon": "^2.0.9",
+        "nyc": "^15.1.0",
+        "supertest": "^6.1.3"
+    },
+    "keywords": [
+        "nodejs",
+        "express",
+        "mongodb"
+    ]
+}
