@@ -19,7 +19,6 @@ MERN stack boilerplate for dashboard app. Complete with login page with JWT auth
     |   |   └── model                           # database schemas
     |   ├── dro                                 # data response object (server -> client)
     |   ├── dto                                 # data transfer object (client -> server)
-    |   ├── dto                                 # data transfer object (client -> server)
     |   ├── error                               # error helper functions
     |   |   ├── api-error                       # api error exceptions
     |   |   └── error-dump                      # error logger (error log. log saved to file per day)
