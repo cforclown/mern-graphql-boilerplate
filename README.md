@@ -96,7 +96,7 @@ ACCESS_TOKEN_EXP_IN=3600
 -   'npm run test-services', to test only all services
 -   'npm run test-coverage', to run coverage test
 
-## SCRIPTS
+## ANOTHER SCRIPTS
 
 -   "migrate-dev"
 -   "migrate-prod"
