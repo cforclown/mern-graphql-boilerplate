@@ -21,7 +21,7 @@ class AuthService {
         this.refresh = this.refresh.bind(this);
         this.logout = this.logout.bind(this);
 
-        this.createSignData = this.createSignData.bind(this);
+        this.createPayload = this.createPayload.bind(this);
         this.createToken = this.createToken.bind(this);
 
         this.startRemoveTokenTask = this.startRemoveTokenTask.bind(this);
@@ -52,18 +52,18 @@ class AuthService {
             if (!user) {
                 throw ApiError.internal("Failed to create user data");
             }
-            const signData = this.createSignData(user);
-            const accessToken = jwt.sign(signData, config.ACCESS_TOKEN_SECRET, {
+            const payload = this.createPayload(user);
+            const accessToken = jwt.sign(payload, config.ACCESS_TOKEN_SECRET, {
                 expiresIn: `${this.accessTokenExpIn}s`,
             });
-            const refreshToken = jwt.sign(signData, config.REFRESH_TOKEN_SECRET, {
+            const refreshToken = jwt.sign(payload, config.REFRESH_TOKEN_SECRET, {
                 expiresIn: `${this.refreshTokenExpIn}s`,
             });
 
-            await this.authDao.addToken(signData.userId, refreshToken);
+            await this.authDao.addToken(payload.userId, refreshToken);
             this.startRemoveTokenTask(refreshToken);
 
-            return this.createToken(signData, accessToken, refreshToken);
+            return this.createToken(payload, accessToken, refreshToken);
         } catch (err) {
             throw err;
         }
@@ -93,7 +93,7 @@ class AuthService {
                 throw ApiError.notFound("User not found");
             }
 
-            const signData = this.createSignData(user);
+            const signData = this.createPayload(user);
             const accessToken = jwt.sign(signData, config.ACCESS_TOKEN_SECRET, {
                 expiresIn: `${this.accessTokenExpIn}s`,
             });
@@ -116,7 +116,7 @@ class AuthService {
                 throw ApiError.internal("Login failed. User data not found");
             }
 
-            const signData = this.createSignData(user);
+            const signData = this.createPayload(user);
             const accessToken = jwt.sign(signData, config.ACCESS_TOKEN_SECRET, {
                 expiresIn: `${this.accessTokenExpIn}s`,
             });
@@ -135,29 +135,29 @@ class AuthService {
     async refresh(refreshToken) {
         try {
             if (!(await this.authDao.isExists(refreshToken))) {
-                throw ApiError.internal("Login failed. User data not found");
+                throw ApiError.internal("Refreshing token failed. Refresh token payload not found");
             }
 
-            const signData = jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET);
-            if (!signData) {
-                throw ApiError.notFound("User token signed data not found");
+            const payload = jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET);
+            if (!payload) {
+                throw ApiError.notFound("Refresh token is expired");
             }
-            if (signData.exp) delete signData.exp;
-            if (signData.iat) delete signData.iat;
+            if (payload.exp) delete payload.exp;
+            if (payload.iat) delete payload.iat;
 
-            const accessToken = jwt.sign(signData, config.ACCESS_TOKEN_SECRET, {
+            const accessToken = jwt.sign(payload, config.ACCESS_TOKEN_SECRET, {
                 expiresIn: `${this.accessTokenExpIn}s`,
             });
-            const newRefreshToken = jwt.sign(signData, config.REFRESH_TOKEN_SECRET, {
+            const newRefreshToken = jwt.sign(payload, config.REFRESH_TOKEN_SECRET, {
                 expiresIn: `${this.refreshTokenExpIn}s`,
             });
 
             this.stopRemoveTokenTask(refreshToken);
 
-            await this.authDao.addToken(signData.userId, newRefreshToken);
+            await this.authDao.addToken(payload.userId, newRefreshToken);
             this.startRemoveTokenTask(newRefreshToken);
 
-            return this.createToken(signData, accessToken, newRefreshToken);
+            return this.createToken(payload, accessToken, newRefreshToken);
         } catch (err) {
             throw err;
         }
@@ -171,7 +171,7 @@ class AuthService {
         }
     }
 
-    createSignData(user) {
+    createPayload(user) {
         return {
             userId: user._id,
             username: user.username,
@@ -226,4 +226,8 @@ class AuthService {
 }
 
 const authDao = require("../dao/auth");
-module.exports = new AuthService({ authDao, accessTokenExpIn: parseInt(config.ACCESS_TOKEN_EXP_IN), refreshTokenExpIn: parseInt(config.ACCESS_TOKEN_EXP_IN) * 2 });
+module.exports = new AuthService({
+    authDao,
+    accessTokenExpIn: parseInt(config.ACCESS_TOKEN_EXP_IN),
+    refreshTokenExpIn: parseInt(config.ACCESS_TOKEN_EXP_IN) * 2,
+});

@@ -33,7 +33,8 @@ class Server {
                 accessTokenExpIn: parseInt(config.ACCESS_TOKEN_EXP_IN),
             },
         });
-        this.publicPath = config.NODE_ENV === "development" ? "../../public/staging" : config.NODE_ENV === "production" ? "../../public/production" : "../../public/default";
+        this.publicPath =
+            config.NODE_ENV === "development" ? "../../public/staging" : config.NODE_ENV === "production" ? "../../public/production" : "../../public/default";
     }
     async start() {
         try {
